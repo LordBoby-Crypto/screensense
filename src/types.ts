@@ -31,11 +31,22 @@ export interface Recommendation extends MediaItem {
   score: number;
 }
 
-export interface AppData {
-  version: 1;
+export interface ProfileData {
   rated: RatedItem[];
   watchlist: WatchlistItem[];
   dismissed: Record<MediaType, number[]>;
+}
+
+export interface Profile extends ProfileData {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface AppData {
+  version: 2;
+  activeProfileId: string;
+  profiles: Profile[];
 }
 
 export interface TmdbGenre {
