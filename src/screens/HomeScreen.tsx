@@ -1,9 +1,9 @@
 import { Bookmark, ChevronRight, Clapperboard, Sparkles, Tv } from "lucide-react";
 import { Logo } from "../components/Logo";
-import type { AppData, MediaType, ScreenName } from "../types";
+import type { MediaType, ProfileData, ScreenName } from "../types";
 
 interface HomeScreenProps {
-  data: AppData;
+  data: ProfileData;
   onNavigate: (screen: ScreenName) => void;
   onCatalog: (type: MediaType) => void;
 }

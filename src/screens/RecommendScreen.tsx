@@ -6,11 +6,11 @@ import { TokenRequired } from "../components/TokenRequired";
 import { TypeToggle } from "../components/TypeToggle";
 import { fetchGenres } from "../lib/tmdb";
 import { getRecommendations } from "../lib/recommendations";
-import type { AppData, MediaItem, MediaType, Recommendation } from "../types";
+import type { MediaItem, MediaType, ProfileData, Recommendation } from "../types";
 
 interface RecommendScreenProps {
   token: string;
-  data: AppData;
+  data: ProfileData;
   onBack: () => void;
   onOpenSettings: () => void;
   onAdd: (item: MediaItem) => void;
