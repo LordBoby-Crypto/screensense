@@ -1,22 +1,27 @@
-import { Check, Download, ExternalLink, KeyRound, RotateCcw, Share, Trash2, Upload } from "lucide-react";
+import { Check, Download, ExternalLink, KeyRound, Pencil, RotateCcw, Share, Trash2, Upload, Users } from "lucide-react";
 import { useRef, useState } from "react";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { exportAppData, importAppData } from "../lib/storage";
 import { validateToken } from "../lib/tmdb";
-import type { AppData } from "../types";
+import type { AppData, Profile } from "../types";
 
 interface SettingsScreenProps {
   token: string;
   data: AppData;
+  activeProfile: Profile;
   onSaveToken: (token: string) => void;
   onReplaceData: (data: AppData) => void;
+  onRenameProfile: (name: string) => boolean;
+  onDeleteProfile: () => boolean;
   onResetDismissed: () => void;
   onClearData: () => void;
   onToast: (message: string) => void;
 }
 
-export function SettingsScreen({ token, data, onSaveToken, onReplaceData, onResetDismissed, onClearData, onToast }: SettingsScreenProps) {
+export function SettingsScreen({ token, data, activeProfile, onSaveToken, onReplaceData, onRenameProfile, onDeleteProfile, onResetDismissed, onClearData, onToast }: SettingsScreenProps) {
   const [draftToken, setDraftToken] = useState(token);
+  const [profileName, setProfileName] = useState(activeProfile.name);
+  const [profileError, setProfileError] = useState("");
   const [saving, setSaving] = useState(false);
   const [tokenError, setTokenError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
@@ -61,12 +66,49 @@ export function SettingsScreen({ token, data, onSaveToken, onReplaceData, onRese
   };
 
   const confirmClear = () => {
-    if (window.confirm("Delete every rating, watchlist item, and dismissed recommendation on this iPhone? This cannot be undone without a backup.")) onClearData();
+    if (window.confirm(`Delete every rating, watchlist item, and dismissed recommendation for ${activeProfile.name}? This cannot be undone without a backup.`)) onClearData();
+  };
+
+  const renameProfile = () => {
+    const cleanName = profileName.trim();
+    if (!cleanName) {
+      setProfileError("Enter a profile name.");
+      return;
+    }
+    if (!onRenameProfile(cleanName)) {
+      setProfileError("That profile name already exists.");
+      return;
+    }
+    setProfileError("");
+    onToast(`Profile renamed to ${cleanName.slice(0, 24)}.`);
+  };
+
+  const deleteProfile = () => {
+    if (data.profiles.length === 1) {
+      onToast("Create another profile before deleting this one.");
+      return;
+    }
+    if (window.confirm(`Delete ${activeProfile.name} and all of this profile’s ratings and watchlist items?`)) {
+      onDeleteProfile();
+      onToast(`${activeProfile.name} was deleted.`);
+    }
   };
 
   return (
     <div className="screen-pad screen-pad--top settings-screen">
       <ScreenHeader title="Settings" />
+      <section className="settings-card">
+        <div className="settings-card__heading"><Users /><div><h2>Active profile</h2><p>Ratings, recommendations, and the watchlist belong only to {activeProfile.name}.</p></div></div>
+        <label className="field-label" htmlFor="profile-name">Profile name</label>
+        <input id="profile-name" className="text-field" value={profileName} onChange={(event) => { setProfileName(event.target.value); setProfileError(""); }} maxLength={24} />
+        {profileError && <p className="field-error" role="alert">{profileError}</p>}
+        <div className="settings-actions settings-actions--split">
+          <button className="button button--secondary" type="button" onClick={renameProfile}><Pencil size={18} /> Rename</button>
+          <button className="button button--danger" type="button" onClick={deleteProfile} disabled={data.profiles.length === 1}><Trash2 size={18} /> Delete profile</button>
+        </div>
+        <p className="privacy-note">Use the profile button at the top of any screen to switch or add profiles.</p>
+      </section>
+
       <section className="settings-card">
         <div className="settings-card__heading"><KeyRound /><div><h2>TMDB connection</h2><p>Required for searches, posters, and recommendations.</p></div></div>
         <label className="field-label" htmlFor="tmdb-token">Read Access Token</label>
@@ -82,7 +124,7 @@ export function SettingsScreen({ token, data, onSaveToken, onReplaceData, onRese
       </section>
 
       <section className="settings-card">
-        <div className="settings-card__heading"><Download /><div><h2>Backup your data</h2><p>Your data exists only on this iPhone. Export a backup before clearing Safari data or changing phones.</p></div></div>
+        <div className="settings-card__heading"><Download /><div><h2>Backup your data</h2><p>Backups include every profile on this iPhone. Export one before clearing Safari data or changing phones.</p></div></div>
         <div className="settings-actions">
           <button className="button button--secondary" type="button" onClick={downloadBackup}><Download size={18} /> Export backup</button>
           <button className="button button--secondary" type="button" onClick={() => fileInput.current?.click()}><Upload size={18} /> Restore backup</button>
@@ -92,13 +134,13 @@ export function SettingsScreen({ token, data, onSaveToken, onReplaceData, onRese
 
       <section className="settings-card">
         <div className="settings-actions">
-          <button className="button button--secondary" type="button" onClick={onResetDismissed}><RotateCcw size={18} /> Reset rejected suggestions</button>
-          <button className="button button--danger" type="button" onClick={confirmClear}><Trash2 size={18} /> Delete ratings and watchlist</button>
+          <button className="button button--secondary" type="button" onClick={onResetDismissed}><RotateCcw size={18} /> Reset {activeProfile.name}’s rejected suggestions</button>
+          <button className="button button--danger" type="button" onClick={confirmClear}><Trash2 size={18} /> Delete {activeProfile.name}’s ratings and watchlist</button>
         </div>
       </section>
 
       <footer className="attribution">
-        <strong>ScreenSense 1.0</strong>
+        <strong>ScreenSense 1.1</strong>
         <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
         <p>No account, analytics, ads, or cloud database.</p>
       </footer>
