@@ -1,11 +1,16 @@
 import { Bookmark, CheckCircle2, Home, Settings } from "lucide-react";
 import type { ReactNode } from "react";
-import type { ScreenName } from "../types";
+import type { Profile, ScreenName } from "../types";
+import { ProfileSwitcher } from "./ProfileSwitcher";
 
 interface AppShellProps {
   children: ReactNode;
   screen: ScreenName;
   onNavigate: (screen: ScreenName) => void;
+  profiles: Profile[];
+  activeProfile: Profile;
+  onSelectProfile: (profileId: string) => void;
+  onCreateProfile: (name: string) => void;
 }
 
 const items = [
@@ -15,10 +20,13 @@ const items = [
   { screen: "settings" as const, label: "Settings", Icon: Settings },
 ];
 
-export function AppShell({ children, screen, onNavigate }: AppShellProps) {
+export function AppShell({ children, screen, onNavigate, profiles, activeProfile, onSelectProfile, onCreateProfile }: AppShellProps) {
   return (
     <div className="app-shell">
-      <main className="app-main">{children}</main>
+      <main className="app-main">
+        <ProfileSwitcher profiles={profiles} activeProfile={activeProfile} onSelect={onSelectProfile} onCreate={onCreateProfile} />
+        {children}
+      </main>
       <nav className="bottom-nav" aria-label="Main navigation">
         {items.map(({ screen: destination, label, Icon }) => (
           <button
