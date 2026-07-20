@@ -26,4 +26,17 @@ describe("ScreenSense app shell", () => {
     fireEvent.click(screen.getByRole("button", { name: "Watched" }));
     expect(screen.getByText("No ratings here yet")).toBeVisible();
   });
+
+  it("creates and switches to a separate profile", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Current profile: My Profile/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Add profile" }));
+    fireEvent.change(screen.getByLabelText("Profile name"), { target: { value: "Family" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create profile" }));
+
+    expect(screen.getByRole("button", { name: /Current profile: Family/ })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: /Current profile: Family/ }));
+    expect(screen.getByRole("button", { name: "My Profile" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Family" })).toBeVisible();
+  });
 });
