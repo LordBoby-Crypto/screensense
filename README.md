@@ -1,6 +1,6 @@
 # ScreenSense
 
-ScreenSense is an installable, iPhone-first web app for rating movies and TV shows, receiving taste-based recommendations, and maintaining a personal watchlist.
+ScreenSense is an installable, iPhone-first web app for rating movies and TV shows, receiving taste-based recommendations, and maintaining profile-specific watchlists.
 
 ## What works
 
@@ -9,6 +9,7 @@ ScreenSense is an installable, iPhone-first web app for rating movies and TV sho
 - Recommendation scoring based on liked, neutral, and disliked genres plus TMDB title-to-title recommendations
 - Exclusion of titles already rated, watchlisted, or rejected
 - Watchlist and watched-library management
+- Multiple local profiles with separate ratings, recommendations, rejected suggestions, and watchlists
 - Local-only storage with JSON backup and restore
 - Installable iPhone PWA shell
 - Automated unit tests, production build, and GitHub Pages deployment workflow
@@ -16,7 +17,7 @@ ScreenSense is an installable, iPhone-first web app for rating movies and TV sho
 ## Important limits
 
 - An internet connection is required to search TMDB, load posters, and request new recommendations.
-- Ratings and the watchlist are stored only in Safari on the iPhone. Clearing Safari website data removes them unless a backup was exported first.
+- Profiles, ratings, and watchlists are stored only in Safari on the iPhone. Clearing Safari website data removes them unless a backup was exported first.
 - The TMDB Read Access Token is stored locally in the browser. It is never committed to this repository.
 - TMDB is extensive, but no catalog can guarantee literally every movie or TV show ever created.
 
@@ -57,6 +58,8 @@ The workflow runs tests and a production build before every deployment.
 4. Tap **Add**.
 5. Open ScreenSense from the new Home Screen icon.
 6. Open **Settings**, add your TMDB token, and start rating titles.
+
+Use the profile button at the top of the app to create profiles such as **Zach**, **Shanon**, or **Family** and switch between them. Existing version 1 data is automatically kept in **My Profile**.
 
 ## Privacy
 
